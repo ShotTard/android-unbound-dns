@@ -29,13 +29,21 @@ rm -f package/bin/c_rehash
 find package -name '*.a' -exec rm -f {} \;
 find package -name '*.la' -exec rm -f {} \;
 find package -name '*.py' -exec rm -f {} \;
+find package -name 'unbound-control-setup ' -exec rm -f {} \;
 
 # move ssl support folder to bin folder for sake of usability
 mv package/ssl package/bin/
 
 # put custom unbound.conf instead of default ones
+cp unbound-control-setup package/bin/unbound-control-setup
 cp unbound.conf package/bin/unbound.conf.default
 cp env.sh package/bin/
+
+# put dnscrypt-proxy, libsodium.so and default server conf
+cp $_DNSCRYPTPROXY_NAME/dnscrypt-proxy-android-armv7-a/system/etc/dnscrypt-proxy/dnscrypt-resolvers.csv package/bin/dnscrypt-resolvers.csv
+cp $_DNSCRYPTPROXY_NAME/dnscrypt-proxy-android-armv7-a/system/lib/libsodium.so package/bin/libsodium.so
+cp $_DNSCRYPTPROXY_NAME/dnscrypt-proxy-android-armv7-a/system/xbin/dnscrypt-proxy package/bin/dnscrypt-proxy
+cp dnscrypt-proxy.conf package/bin/dnscrypt-proxy.conf
 
 # replace default shell with /system/bin/sh available android-wide
 $_SED -i "1s/.*/#\!\/system\/bin\/sh/" package/bin/unbound-control-setup 

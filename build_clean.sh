@@ -15,3 +15,5 @@ test_del $_OPENSSL_NAME/build
 test_del $_LIBEVENT_NAME/build
 test_del $_EXPAT_NAME/build
 test_del $_UNBOUND_NAME/build
+test_del $_LIBSODIUM_NAME/libsodium-android-armv7-a
+test_del $_DNSCRYPTPROXY_NAME/dnscrypt-proxy-android-armv7-a

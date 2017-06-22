@@ -16,7 +16,7 @@ test -d build || mkdir build
 echo "OpenSSL configure"
 ./Configure no-ssl2 no-ssl3 no-shared no-zlib no-comp no-hw -fPIC -pie -fpic --install_prefix=`pwd`/build/ --prefix=".//" --openssldir="ssl" android &> configure.log
 echo "OpenSSL make"
-make -j depend &> make.depend.log
+make -j depend > make.depend.log
 make -j &> make.log
 echo "OpenSSL make install_sw"
 make -j install_sw &> make.install_sw.log
@@ -65,6 +65,23 @@ echo "Unbound make"
 make -j &> make.log
 echo "Unbound make install"
 make -j install &> make.install.log
+cd ..
+
+# Configure and build libsodium
+cd $_LIBSODIUM_NAME
+echo "libsodium configure"
+./autogen.sh
+echo "libsodium make"
+./dist-build/android-armv7-a.sh
+cd ..
+
+# Configure and build dnscrypt-proxy
+cd $_DNSCRYPTPROXY_NAME
+echo "dnscrypt-proxy configure"
+./autogen.sh
+echo "dnscrypt-proxy make"
+./dist-build/android-armv7-a.sh
+cd ..
 
 echo "Build finished"
 echo "TIP: Create deployment package by running ./package.sh"

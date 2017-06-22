@@ -10,20 +10,24 @@ error ( ) {
         exit 1
 }
 
-export _UNBOUND_NAME=unbound-1.6.1
+export _UNBOUND_NAME=unbound-1.6.3
 export _LIBEVENT_NAME=libevent-2.0.22-cmake-configure-fixes
 export _OPENSSL_NAME=openssl-1.0.2k
 export _EXPAT_NAME=expat-2.2.1
+export _LIBSODIUM_NAME=libsodium-master
+export _DNSCRYPTPROXY_NAME=dnscrypt-proxy-master
 
-export _UNBOUND_URL="https://unbound.net/downloads/unbound-1.6.1.tar.gz"
+export _UNBOUND_URL="https://unbound.net/downloads/unbound-1.6.3.tar.gz"
 export _LIBEVENT_URL="https://github.com/azat/libevent"
 export _LIBEVENT_GIT_BRANCH="cmake-configure-fixes"
 #export _LIBEVENT_PATCH="../libevent-2.0.22-stable.patch"
 export _LIBEVENT_PATCH=""
 export _OPENSSL_URL="https://www.openssl.org/source/openssl-1.0.2k.tar.gz"
 export _EXPAT_URL="http://kent.dl.sourceforge.net/project/expat/expat/2.2.1/expat-2.2.1.tar.bz2"
+export _LIBSODIUM_URL="https://github.com/jedisct1/libsodium/archive/master.zip"
+export _DNSCRYPTPROXY_URL="https://github.com/jedisct1/dnscrypt-proxy/archive/master.zip"
 
-export _UNBOUND_URL_SIGNATURE="https://unbound.net/downloads/unbound-1.6.1.tar.gz.asc"
+export _UNBOUND_URL_SIGNATURE="https://unbound.net/downloads/unbound-1.6.3.tar.gz.asc"
 export _UNBOUND_URL_SIGNATURE_FINGERPRINT="EDFAA3F2CA4E6EB05681AF8E9F6F1C2D7E045F8D"
 export _OPENSSL_URL_SIGNATURE="https://www.openssl.org/source/openssl-1.0.2k.tar.gz.asc"
 export _OPENSSL_URL_SIGNATURE_FINGERPRINT="8657ABB260F056B1E5190839D9C4D26D0E604491"
@@ -31,7 +35,8 @@ export _OPENSSL_URL_SIGNATURE_FINGERPRINT="8657ABB260F056B1E5190839D9C4D26D0E604
 export ANDROID_NDK_HOME="$LOCAL_ANDROID_NDK_HOME"
 test -n "$ANDROID_NDK_HOME" || error "Fill your NDK HOME in _setenv_android.bash (or set env variable LOCAL_ANDROID_NDK_HOME)"
 
-export ANDROID_NDK_PLATFORM=21
+export ANDROID_NDK_PLATFORM=19
+export NDK_PLATFORM="android-$ANDROID_NDK_PLATFORM"
 export ANDROID_NDK_ARCH=arm
 export ANDROID_NDK_TARGET=arm-linux-androideabi-4.9
 
@@ -68,3 +73,4 @@ export CXXFLAGS="--sysroot=$ANDROID_NDK_SYSROOT -fPIC -pie -O3 -fpic"
 export CFLAGS="--sysroot=$ANDROID_NDK_SYSROOT -fPIC -pie -O3 -fpic"
 export LDFLAGS="--sysroot=$ANDROID_NDK_SYSROOT -fPIC -pie -O3 -fpic"
 export PATH=$ANDROID_NDK_HOME/toolchains/$ANDROID_NDK_TARGET/prebuilt/$ANDROID_NDK_HOST_PLATFORM/bin:$PATH
+export SODIUM_ANDROID_PREFIX="$(pwd)/$_LIBSODIUM_NAME/libsodium-android-armv7-a"

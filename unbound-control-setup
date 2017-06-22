@@ -157,4 +157,100 @@ rm -f $CTL_BASE"_trust.pem" $SVR_BASE"_trust.pem" $SVR_BASE"_trust.srl"
 
 echo "Setup success. Certificates created. Enable in unbound.conf file to use"
 
+# choose from a set of predefined servers for now, no idea why running these commands in adb shell works ok
+# but having them in this script, after the initial 'cat resolvers', nothing is outputted
+
+#if test -f ./dnscrypt-proxy.conf; then
+    echo "dnscrypt-proxy.conf exists, using those servers..."
+#else
+#    echo "Picking 4 random DNSCrypt servers..."
+#    # get only the DNSSEC enabled servers, no IPv6 for now, randomize them (there is no sort -R on busybox/Android), use the first 4
+#    cat ./dnscrypt-resolvers.csv | cut -d "," -f 1 | while read line;do echo $(od -An -N2 -t d /dev/urandom)'|'$line;done |sort|cut -d"|" -f2- | head -4 > ./dnscrypt-proxy.conf
+#    # assign variable names to each one
+#    sed -i -e '1 s/^/RESOLVER_1=/' -e '2 s/^/RESOLVER_2=/' -e '3 s/^/RESOLVER_3=/' -e '4 s/^/RESOLVER_4=/' ./dnscrypt-proxy.conf
+#fi
+
+source ./dnscrypt-proxy.conf
+
+#first server used is the first one that responds between 1 and 2
+while :; do
+# check first server
+      RESOLVER_NAME1="$RESOLVER_1"
+      LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH \
+        ./dnscrypt-proxy \
+        --resolver-name="$RESOLVER_NAME1" \
+        --resolvers-list=./dnscrypt-resolvers.csv \
+        --test=3600
+        case "$?" in
+                0|4 ) break;;
+        esac
+        sleep 1
+
+# check second server
+      RESOLVER_NAME1="$RESOLVER_2"
+      LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH \
+        ./dnscrypt-proxy \
+        --resolver-name="$RESOLVER_NAME1" \
+        --resolvers-list=./dnscrypt-resolvers.csv \
+        --test=3600
+        case "$?" in
+                0|4 ) break;;
+        esac
+        sleep 1
+
+      echo "Retrying... is the connection even on?"
+done
+
+
+#second server used is the first that responds between 3 and 4
+while :; do
+# check third server
+      RESOLVER_NAME2="$RESOLVER_3"
+      LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH \
+        ./dnscrypt-proxy \
+        --resolver-name="$RESOLVER_NAME2" \
+        --resolvers-list=./dnscrypt-resolvers.csv \
+        --test=3600
+        case "$?" in
+                0|4 ) break;;
+        esac
+        sleep 1
+
+# check fourth server
+      RESOLVER_NAME2="$RESOLVER_4"
+      LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH \
+        ./dnscrypt-proxy \
+        --resolver-name="$RESOLVER_NAME2" \
+        --resolvers-list=./dnscrypt-resolvers.csv \
+        --test=3600
+        case "$?" in
+                0|4 ) break;;
+        esac
+        sleep 1
+
+      echo "Retrying... is the connection even on?"
+done
+
+echo "Connecting to $RESOLVER_NAME1..."
+LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH \
+./dnscrypt-proxy \
+--daemonize \
+--ephemeral-keys \
+--local-address=127.0.0.1:5301 \
+--loglevel=3 \
+--resolver-name="$RESOLVER_NAME1" \
+--resolvers-list=./dnscrypt-resolvers.csv
+
+echo "Connecting to $RESOLVER_NAME2..."
+LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH \
+./dnscrypt-proxy \
+--daemonize \
+--ephemeral-keys \
+--local-address=127.0.0.1:5302 \
+--loglevel=3 \
+--resolver-name="$RESOLVER_NAME2" \
+--resolvers-list=./dnscrypt-resolvers.csv
+
+echo "DNSCrypt-proxy might be running..."
+
 exit 0
