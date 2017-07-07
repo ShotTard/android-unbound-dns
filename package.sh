@@ -39,6 +39,13 @@ cp unbound-control-setup package/bin/unbound-control-setup
 cp unbound.conf package/bin/unbound.conf.default
 cp env.sh package/bin/
 
+
+# echo "Picking 4 random DNSCrypt servers..."
+# get only the DNSSEC enabled servers, no IPv6 for now, randomize them (there is no sort -R on busybox/Android), use the first 4
+cat $_DNSCRYPTPROXY_NAME/dnscrypt-resolvers.csv | grep -e "yes\,yes\,no" -e "yes\,yes\,yes" | grep -v "ipv6" | cut -d "," -f 1 | while read line;do echo $(od -An -N2 -t d /dev/urandom)'|'$line;done |sort|cut -d"|" -f2- | head -4 > ./dnscrypt-proxy.conf
+# assign variable names to each one
+sed -i -e '1 s/^/RESOLVER_1=/' -e '2 s/^/RESOLVER_2=/' -e '3 s/^/RESOLVER_3=/' -e '4 s/^/RESOLVER_4=/' ./dnscrypt-proxy.conf
+
 # put dnscrypt-proxy, libsodium.so and default server conf
 cp $_DNSCRYPTPROXY_NAME/dnscrypt-proxy-android-armv7-a/system/etc/dnscrypt-proxy/dnscrypt-resolvers.csv package/bin/dnscrypt-resolvers.csv
 cp $_DNSCRYPTPROXY_NAME/dnscrypt-proxy-android-armv7-a/system/lib/libsodium.so package/bin/libsodium.so
