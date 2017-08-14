@@ -35,6 +35,8 @@
 
 # settings:
 
+export PATH=.:$PATH:/sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin
+
 # directory for files
 DESTDIR=.
 
@@ -131,7 +133,7 @@ echo "prompt=no\n" >> request.cfg
 echo "distinguished_name=req_distinguished_name\n" >> request.cfg
 echo "\n" >> request.cfg
 echo "[req_distinguished_name]\n" >> request.cfg
-echo "commonName=$CLIENTNAME" >> request.cfg
+echo "commonName=$CLIENTNAME\n" >> request.cfg
 
 test -f request.cfg || error "could not create request.cfg"
 
